@@ -212,6 +212,15 @@ class Builder:
 		relay_cell = Cell(CIRCID, Cell.CMD_ENUM['RELAY'], Cell.PAYLOAD_LEN, relay_cell_payload)
 		return relay_cell
 
+	@staticmethod
+	def build_relay_data_cell(CIRCID: int,StreamID,kdf_dict,http_req: str):
+		enc_StreamID = unpack('!H', CoreCryptoSymmetric.encrypt_for_hop(pack('!H', StreamID), kdf_dict))[0]
+		enc_relay_data_len = unpack('!H',CoreCryptoSymmetric.encrypt_for_hop(pack('!H', Cell.PAYLOAD_LEN - 3),kdf_dict))[0]
+		#creating the relay cell payload with http_req as payload
+		relay_cell_payload=RelayCellPayload(RelayCellPayload.RELAY_CMD_ENUM['RELAY_DATA'],0,enc_StreamID,b'',enc_relay_payload_len,http_req)
+		#creating the complete cell
+		relay_data_cell=Cell(CIRCID,Cell.CMD_ENUM['RELAY'],Cell.PAYLOAD_LEN,relay_cell_payload)
+		return relay_data_cell
 
 
 class Parser:
