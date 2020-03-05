@@ -218,12 +218,10 @@ class Builder:
 		enc_relay_data_len = unpack('!H',CoreCryptoSymmetric.encrypt_from_origin(pack('!H', Cell.PAYLOAD_LEN - 3),kdf_dict1,kdf_dict2,kdf_dict3))[0]
 		
 		#encrypting the http_req
-		encoded_http_req=http_req.encode()
-		http_req_len=len(http_req)
-		enc_http_req=unpack('!http_req_lenc', CoreCryptoSymmetric.encrypt_from_origin(pack('!http_req_lenc', StreamID),kdf_dict1,kdf_dict2,kdf_dict3))[0]
+		enc_http_req=(CoreCryptoSymmetric.encrypt_from_origin(http_req.encode(),kdf_dict1,kdf_dict2,kdf_dict3)).decode("utf-8")
 
 		#creating the relay cell payload with http_req as payload
-		relay_cell_payload=RelayCellPayload(RelayCellPayload.RELAY_CMD_ENUM['RELAY_DATA'],0,enc_StreamID,b'',enc_relay_data_len,http_req)
+		relay_cell_payload=RelayCellPayload(RelayCellPayload.RELAY_CMD_ENUM['RELAY_DATA'],0,enc_StreamID,b'',enc_relay_data_len,enc_http_req)
 
 		#creating the complete cell
 		relay_data_cell=Cell(CIRCID,Cell.CMD_ENUM['RELAY'],Cell.PAYLOAD_LEN,relay_cell_payload)
